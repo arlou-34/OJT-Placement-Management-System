@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap & Font Awesome -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0eaff;
+    }
+
+    .sidebar {
+      background: linear-gradient(180deg, #28a745, #92e2a4);
+      min-height: 100vh;
+      padding-top: 40px;
+      color: white;
+    }
+
+    .sidebar a {
+      color: #fff;
+      display: block;
+      padding: 12px 20px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .sidebar a:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+    }
+
+    .card-section {
+      background: #fff;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .dashboard-header {
+      background: linear-gradient(90deg, #28a745, #92e2a4);
+      border-radius: 16px;
+      color: #fff;
+      padding: 25px 30px;
+      margin-bottom: 30px;
+    }
+
+    .dashboard-header h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .dashboard-cards .card {
+      border: none;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .dashboard-cards .card i {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #28a745;
+    }
+
+    .sidebar .btn {
+      margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        padding-top: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Offcanvas Sidebar -->
+<nav class="navbar navbar-dark d-md-none" style="background-color: #28a745;">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <span class="navbar-brand">Menu</span>
+  </div>
+</nav>
+
+<div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="sidebarMenu">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title text-dark">Navigation</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body sidebar">
+    <!--<a href="{% url 'homepage' %}"><i class="fa fa-home me-2"></i> Homepage</a>-->
+    <a href="{% url 'student_info' %}"><i class="fa fa-user me-2"></i> My Info</a>
+    <a href="{% url 'upload_report' %}"><i class="fa fa-upload me-2"></i>My Document</a>
+    <a href="{% url 'logout' %}" class="btn btn-danger w-100 "><i class="fa fa-sign-out-alt me-2"></i> Logout</a>
+  </div>
+</div>
+
+{# {% extends 'base.html' %} #}
+{# {% block content %} #}
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-2 d-none d-md-block sidebar">
+       <!--<a href="{% url 'homepage' %}"><i class="fa fa-home"></i> Homepage</a>-->
+      <a href="{% url 'student_info' %}"><i class="fa fa-user me-2"></i> My Info</a>
+      <a href="{% url 'upload_report' %}"><i class="fa fa-upload me-2"></i> My Document</a>
+      <a href="{% url 'logout' %}" class="btn btn-danger w-100"><i class="fa fa-sign-out-alt me-2"></i> Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-10 px-4 py-4">
+      <div class="dashboard-header">
+        <h2>Welcome back, {{ student.full_name }}!</h2>
+        <p class="mb-0">Here is your current OJT summary and status.</p>
+      </div>
+
+      <div class="row dashboard-cards mb-4">
+        <div class="col-md-4">
+          <div class="card text-center">
+            <i class="fa fa-building"></i>
+            <h5 class="mt-2">Company Placement</h5>
+            <p>{{ student.company_placement }}</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card text-center">
+            <i class="fa fa-hourglass-half"></i>
+            <h5 class="mt-2">Total Hours</h5>
+            <p>{{ student.total_hours }}</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card text-center">
+            <i class="fa fa-calendar"></i>
+            <h5 class="mt-2">OJT Period</h5>
+            <p>{{ student.ojt_start }} - {{ student.ojt_end }}</p>
+          </div>
+        </div>
+      </div>
+
+      <section class="card-section">
+        <h4><i class="fa fa-user me-2"></i> My Information</h4>
+        <p><strong>Email Address:</strong> {{ student.email }}</p>
+        <p><strong>Company Placement:</strong> {{ student.company_placement }}</p>
+        <p><strong>Total Hours:</strong> {{ student.total_hours }}</p>
+        <p><strong>OJT Start:</strong> {{ student.ojt_start }}</p>
+        <p><strong>OJT End:</strong> {{ student.ojt_end }}</p>
+      </section>
+    </div>
+  </div>
+</div>
+
+{# % endblock % #}
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

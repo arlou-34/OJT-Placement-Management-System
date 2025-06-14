@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Dashboard</title>
+
+  <!-- Bootstrap & Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body {
+       font-family: 'Segoe UI', sans-serif;
+      background-color: #f0eaff;
+    }
+
+    .sidebar {
+      background: linear-gradient(180deg, #28a745, #92e2a4);
+      min-height: 100vh;
+      padding-top: 60px;
+      font-weight: 500;
+    }
+
+    .sidebar a {
+      color: #ddd;
+      display: block;
+      padding: 12px 10px;
+      text-decoration: none;
+    }
+
+    .sidebar a:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border-radius: 8px;
+    }
+
+    .card-section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        padding-top: 20px;
+      }
+
+      .offcanvas-body .btn {
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+{# {% extends 'base.html' %} #}
+{# {% block content %} #}
+
+<!-- Navbar for small screens -->
+<nav class="navbar navbar-dark bg-dark d-md-none">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <span class="navbar-brand">Menu</span>
+  </div>
+</nav>
+
+<!-- Offcanvas Sidebar -->
+<div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="sidebarMenu">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title text-dark">Navigation</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body sidebar">
+    <!--<a href="{% url 'homepage' %}"><i class="fa fa-home"></i> Homepage</a>-->
+    <a href="{% url 'student_info' %}"><i class="fa fa-user"></i> My Info</a>
+    <a href="#" data-bs-toggle="modal" data-bs-target="#uploadModal"><i class="fa fa-upload"></i> Upload Document</a>
+    <a href="{% url 'logout' %}" class="btn btn-danger w-100 mt-3"><i class="fa fa-sign-out-alt"></i> Logout</a>
+  </div>
+</div>
+
+<!-- Main Layout -->
+<div class="container-fluid">
+  <div class="row min-vh-100">
+    
+    <!-- Sidebar (Desktop) -->
+    <div class="col-md-2 d-none d-md-block sidebar">
+      <!--<a href="{% url 'homepage' %}"><i class="fa fa-home"></i> Homepage</a>-->
+      <a href="{% url 'student_info' %}"><i class="fa fa-user"></i> My Info</a>
+      <a href="#" data-bs-toggle="modal" data-bs-target="#uploadModal"><i class="fa fa-upload"></i> Upload Document</a>
+      <a href="{% url 'logout' %}" class="btn btn-danger w-100 mt-4"><i class="fa fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <!-- Content -->
+    <div class="col-md-10 ms-auto px-4 py-4">
+      <div class="card-section">
+        <h5 style="color:#28a745"><i class="fa fa-file-alt"></i> Uploaded Reports</h5>
+        <ul class="list-group mt-3">
+          {% for report in reports %}
+            <li class="list-group-item">{{ report.file.name }} - {{ report.uploaded_at }}</li>
+          {% empty %}
+            <li class="list-group-item">No reports uploaded yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="uploadReportForm" method="post" enctype="multipart/form-data" action="{% url 'upload_report' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="uploadModalLabel"><i class="fa fa-upload"></i> Upload Report</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <label for="file">Upload Report File:</label>
+          <input type="file" name="file" class="form-control mb-3" id="file" required>
+          <label for="link">Or Provide Link:</label>
+          <input type="url" name="link" class="form-control" id="link" placeholder="https://example.com/folder-or-report">
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Upload</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{# % endblock % #}
+
+<!-- JS Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  $(document).ready(function () {
+  const csrftoken = getCookie('csrftoken');
+
+  $('#uploadReportForm').on('submit', function (e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const $form = $(this);
+
+    $.ajax({
+      url: $form.attr('action'),
+      type: 'POST',
+      data: formData,
+      processData: false,
+      contentType: false,
+      headers: {
+        'X-CSRFToken': csrftoken,
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      success: function (response) {
+        Swal.fire({
+          title: 'Success!',
+          text: response.message,
+          icon: 'success',
+          confirmButtonText: 'OK'
+        }).then(() => {
+          bootstrap.Modal.getInstance(document.getElementById('uploadModal')).hide();
+          $form[0].reset();
+          location.reload();
+        });
+      },
+      error: function (xhr) {
+        const errors = xhr.responseJSON?.errors;
+        let errorText = errors
+          ? Object.entries(errors).map(([f, e]) => `${f}: ${e.join(', ')}`).join('\n')
+          : 'An unexpected error occurred.';
+        Swal.fire({
+          title: 'Error!',
+          text: errorText,
+          icon: 'error'
+        });
+      }
+    });
+  });
+});
+
+</script>
+</body>
+</html>

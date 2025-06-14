@@ -1,0 +1,6 @@
+__pycache__/
+venv/
+media/reports/
+db.sqlite3/
+reports/
+static/

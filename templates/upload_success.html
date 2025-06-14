@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Success{% endblock %}
+
+{% block content %}
+<!-- Include SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+            title: 'Success!',
+            text: '{{ message }}',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            customClass: {
+                confirmButton: 'swal2-confirm'
+            }
+        }).then(() => {
+            window.location.href = "{% url 'dashboard' %}";
+        });
+    });
+</script>
+{% endblock %}

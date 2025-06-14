@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Evaluation Form</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f9;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    .form-container {
+      background: #fff;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+   .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    input,
+    select,
+    textarea {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      width: 80%; /* or a fixed width like 300px */
+      margin: 0 auto; /* this centers the input */
+    }
+
+      button {
+      padding: 10px 15px;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 80%; /* matches input field width */
+      margin: 15px auto 0 auto; /* centers the button */
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #filter-btn {
+      margin-top: 10px;
+      margin-bottom: 20px;
+      background-color: #28a745;
+    }
+
+    @media (max-width: 600px) {
+      .form-container {
+        padding: 20px;
+      }
+    }
+
+    .btn {
+  padding: 10px 20px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 80%;
+  margin: 20px auto 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px; /* spacing between icon and text */
+  text-align: center;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+.btn i {
+  font-size: 16px;
+}
+
+  </style>
+</head>
+<body>
+  <h2><i class="fas fa-clipboard-list"></i> Evaluation Form</h2>
+
+  <div class="form-container">
+    <!-- Filter -->
+    <div class="form-group">
+      <label for="company"><i class="fas fa-building"></i> Filter by Company Placement:</label>
+      <input type="text" id="company" name="company">
+      <button type="button" id="filter-btn"><i class="fas fa-filter"></i> Filter</button>
+    </div>
+
+    <!-- Evaluation Form -->
+    <form id="evaluation-form" method="post">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="id_student"><i class="fas fa-user-graduate"></i> Student:</label>
+        <select name="student" id="id_student" required>
+          <option value="">Select a student</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="id_evaluator_name"><i class="fas fa-user-tie"></i> Evaluator Name:</label>
+        <input type="text" name="evaluator_name" id="id_evaluator_name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="id_company"><i class="fas fa-building"></i> Company:</label>
+        <input type="text" name="company" id="id_company" required>
+      </div>
+
+      <div class="form-group">
+        <label for="id_punctuality"><i class="fas fa-clock"></i> Punctuality (60-98):</label>
+        <input type="number" name="punctuality" id="id_punctuality" min="60" max="98" required>
+      </div>
+
+      <div class="form-group">
+        <label for="id_work_quality"><i class="fas fa-check-circle"></i> Work Quality (60-98):</label>
+        <input type="number" name="work_quality" id="id_work_quality" min="60" max="98" required>
+      </div>
+
+      <div class="form-group">
+        <label for="id_communication_skills"><i class="fas fa-comments"></i> Communication Skills (60-98):</label>
+        <input type="number" name="communication_skills" id="id_communication_skills" min="60" max="98" required>
+      </div>
+
+      <div class="form-group">
+        <label for="id_teamwork"><i class="fas fa-users"></i> Teamwork (60-98):</label>
+        <input type="number" name="teamwork" id="id_teamwork" min="60" max="98" required>
+      </div>
+
+      <div class="form-group">
+        <label for="id_comments"><i class="fas fa-comment-dots"></i> Additional Comments:</label>
+        <textarea name="comments" id="id_comments" rows="4" placeholder="Optional comments"></textarea>
+      </div>
+
+      <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> Submit Evaluation</button>
+    </form>
+  </div>
+
+  <script>
+    // Filter students by company
+    $('#filter-btn').click(function () {
+      const company = $('#company').val();
+      $.get("{% url 'get_students_by_company' %}", { company: company }, function (data) {
+        const studentSelect = $('#id_student');
+        studentSelect.empty().append('<option value="">Select a student</option>');
+        data.students.forEach(student => {
+          studentSelect.append(`<option value="${student.id}">${student.full_name}</option>`);
+        });
+      });
+    });
+
+    // Form submission via AJAX
+    $('#evaluation-form').submit(function (e) {
+      e.preventDefault();
+      $.ajax({
+        url: "{% url 'submit_evaluation' %}",
+        method: "POST",
+        data: $(this).serialize(),
+        success: function (response) {
+          Swal.fire('Success!', response.message, 'success');
+          $('#evaluation-form')[0].reset();
+        },
+        error: function (xhr) {
+          let errorMessage = "Please correct the form errors.";
+          if (xhr.responseJSON && xhr.responseJSON.message) {
+            errorMessage = xhr.responseJSON.message;
+          }
+          Swal.fire('Error!', errorMessage, 'error');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
